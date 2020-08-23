@@ -23,7 +23,6 @@ module.exports = {
   plugins: [
     // new MiniCssExtractPlugin(),
   ],
-  
   module: {
     rules: [
       {
@@ -39,6 +38,10 @@ module.exports = {
           { loader: 'postcss-loader' },
           { loader: 'sass-loader' },
         ],
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },

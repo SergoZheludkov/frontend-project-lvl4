@@ -1,18 +1,7 @@
-[![Github Actions Status](https://github.com/hexlet-components/projects-frontend-l4-server/workflows/Node%20CI/badge.svg)](https://github.com/hexlet-components/projects-frontend-l4-server/actions)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e0fe67c617e4a14ccfc0/maintainability)](https://codeclimate.com/github/SergoZheludkov/frontend-project-lvl4/maintainability)
 
-## Requirements
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e0fe67c617e4a14ccfc0/test_coverage)](https://codeclimate.com/github/SergoZheludkov/frontend-project-lvl4/test_coverage)
+
+## Slack (prototype)
 
 * [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli)
-
-## Install
-
-```sh
-$ make install
-```
-
-## Run
-
-```sh
-$ make start
-# open http://localhost:5000
-```
