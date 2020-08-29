@@ -1,7 +1,8 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
+import Channels from './Channels';
 import MessageInput from './MessageInput';
-import ChannelsList from './ChannelsList';
+import MessagesBox from './MessagesBox';
 
 export default class App extends React.Component {
   render() {
@@ -14,11 +15,11 @@ export default class App extends React.Component {
               <div>+</div>
             </div>
             <div className="mt-3">
-              <ChannelsList serverData={serverData} />
+              <Channels serverData={serverData} />
             </div>
           </Col>
           <Col sm={9} className="flex-column pb-5">
-            <div id="currentChat" className="border h-100 mb-3 rounded-lg" ></div>
+            <MessagesBox />
             <MessageInput />
           </Col>
         </Row>
