@@ -57,6 +57,7 @@ const Identifier = () => {
             type="text"
             className={inputClasses}
             onChange={formik.handleChange}
+            disabled={formik.values.disabled}
             value={formik.values.nickname}
             placeholder="Nickname"
           />

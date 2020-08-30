@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import Cookies from 'js-cookie';
 import gon from 'gon';
+import socket from 'socket.io-client';
 import App from './components/App';
 import rootReducer from './slices/index';
 import Identifier from './components/Identifier';
@@ -22,6 +23,9 @@ const store = configureStore({
   middleware,
   devTools: process.env.NODE_ENV !== 'production',
 });
+// ------------------------------------------------------------------------
+const io = socket();
+io.on('newMessage', ({ data }) => store.dispatch({ type: 'messagesBox/updateMessages', payload: data }));
 // ------------------------------------------------------------------------
 const renderIdentifier = () => {
   ReactDOM.render(<Identifier />, document.querySelector('nav'));

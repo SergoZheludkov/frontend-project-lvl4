@@ -18,7 +18,7 @@ export default class App extends React.Component {
               <Channels serverData={serverData} />
             </div>
           </Col>
-          <Col sm={9} className="flex-column pb-5">
+          <Col sm={9} className="flex-column h-100 pb-5">
             <MessagesBox />
             <MessageInput />
           </Col>

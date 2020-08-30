@@ -17,7 +17,7 @@ const spinner = (
   />
 );
 
-const mapStateToProps = ({ messagesBox: { sendedState, error } }) => ({ sendedState, error });
+const mapStateToProps = ({ messageInput: { sendedState, error } }) => ({ sendedState, error });
 
 const actionCreators = {
   addMessage,
@@ -43,8 +43,7 @@ const Input = (props) => {
       formik.setValues({ message: '' });
     },
   });
-  // const errors = error.name; // || formik.errors.nickname;
-  // console.log(errors);
+
   const requesting = sendedState === 'requesting';
   const variant = requesting ? 'outline-secondary' : 'outline-primary';
   return (
@@ -55,6 +54,7 @@ const Input = (props) => {
         type="text"
         className="form-control"
         onChange={formik.handleChange}
+        disabled={requesting}
         value={formik.values.message}
         placeholder="Input your message"
       />
