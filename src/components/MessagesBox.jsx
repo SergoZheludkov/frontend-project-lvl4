@@ -1,7 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 
-const mapStateToProps = ({ messagesBox: { messages } }) => ({ messages });
+const getMessages = (state) => state.messagesBox.messages;
+const getCurrentChannelId = (state) => state.channelsBox.currentChannelId;
+
+const getCurrentChannelMessages = createSelector(
+  getMessages,
+  getCurrentChannelId,
+  (messages, currentChannelId) => messages.filter((m) => m.channelId === currentChannelId),
+);
+// ------------------------------------------------------------------------
+const mapStateToProps = (state) => ({ messages: getCurrentChannelMessages(state) });
 
 const MessagesBox = (props) => {
   const { messages } = props;

@@ -1,28 +1,41 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import Channels from './Channels';
+import { connect } from 'react-redux';
+import ChannelsControl from './ChannelsControl';
+import ChannelsList from './ChannelsList';
 import MessageInput from './MessageInput';
 import MessagesBox from './MessagesBox';
+import Context from './Context';
+import getModal from './modals';
+import { openIdentificationModal } from '../slices';
 
-export default class App extends React.Component {
-  render() {
-    const { serverData } = this.props;
-    return (
-        <Row className="h-100 pb-5" >
-          <Col className="flex-column border-right" sm={3}>
-            <div className="d-flex justify-content-between">
-              <div>Channels</div>
-              <div>+</div>
-            </div>
-            <div className="mt-3">
-              <Channels serverData={serverData} />
-            </div>
-          </Col>
-          <Col sm={9} className="flex-column h-100 pb-5">
-            <MessagesBox />
-            <MessageInput />
-          </Col>
-        </Row>
-    );
-  }
-}
+const actionCreators = { openIdentificationModal };
+
+const App = (props) => {
+  const { openIdentificationModal: runIdentification } = props;
+  const { nickname } = useContext(Context);
+  if (!nickname) runIdentification();
+
+  const IdentificationModal = getModal('identification');
+  const CreateModal = getModal('create');
+  const RenameModal = getModal('rename');
+  const Remove = getModal('remove');
+  return (
+    <Row className="h-100 pb-5" >
+      <IdentificationModal />
+      <CreateModal />
+      <RenameModal />
+      <Remove />
+      <Col className="flex-column rounded-lg overflow-auto h-auto mh-100" sm={3}>
+        <ChannelsControl />
+        <ChannelsList />
+      </Col>
+      <Col sm={9} className="flex-column h-100 pb-5">
+        <MessagesBox />
+        <MessageInput />
+      </Col>
+    </Row>
+  );
+};
+
+export default connect(null, actionCreators)(App);

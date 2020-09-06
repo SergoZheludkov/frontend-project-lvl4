@@ -17,14 +17,17 @@ const spinner = (
   />
 );
 
-const mapStateToProps = ({ messageInput: { sendedState, error } }) => ({ sendedState, error });
+const mapStateToProps = ({
+  messageInput: { sendedState, error },
+  channelsBox: { currentChannelId },
+}) => ({ currentChannelId, sendedState, error });
 
 const actionCreators = {
   addMessage,
 };
 
 const Input = (props) => {
-  const { sendedState, addMessage: sendMessage } = props;
+  const { currentChannelId, sendedState, addMessage: sendMessage } = props;
   const { nickname } = useContext(Context);
 
   const schema = yup.object().shape({
@@ -39,7 +42,7 @@ const Input = (props) => {
     },
     validationSchema: schema,
     onSubmit: ({ message }) => {
-      sendMessage({ nickname, text: message });
+      sendMessage({ nickname, text: message }, currentChannelId);
       formik.setValues({ message: '' });
     },
   });
