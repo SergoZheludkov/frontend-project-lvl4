@@ -21,12 +21,12 @@ const App = (props) => {
   const RenameModal = getModal('rename');
   const Remove = getModal('remove');
   return (
-    <Row className="h-100 pb-5" >
+    <Row className="h-100 pb-5 overflow-auto" >
       <IdentificationModal />
       <CreateModal />
       <RenameModal />
       <Remove />
-      <Col className="flex-column rounded-lg overflow-auto h-auto mh-100" sm={3}>
+      <Col className="flex-column overflow-auto h-auto mh-100" sm={3}>
         <ChannelsControl />
         <ChannelsList />
       </Col>
