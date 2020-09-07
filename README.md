@@ -7,3 +7,17 @@
 ## Slack (prototype)
 
 * [Link to Chat](https://sergozheludkov-frontend-lvl4.herokuapp.com/)
+
+### Technology stack
+
+* React
+* Redux (Redux toolkit)
+* React Bootstrap
+* Socket.io
+* Axios
+* Yup
+* Formik
+* Reselect
+
+### Preview
+![Preview](https://i.ibb.co/GsBZsQj/https-sergozheludkov-frontend-lvl4-herokuapp-com-2020-09-07-16-56-59.png "Chat preview")
