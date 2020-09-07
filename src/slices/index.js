@@ -88,6 +88,8 @@ const {
 } = modalSlice.actions;
 
 const days = 5;
+const timeToCloseModal = 2000;
+
 export const setNickName = ({ nickname }) => async (dispatch) => {
   dispatch(channelRequesting());
   try {
@@ -96,7 +98,7 @@ export const setNickName = ({ nickname }) => async (dispatch) => {
     setTimeout(() => {
       dispatch(closeModal());
       window.location.reload();
-    }, 2000);
+    }, timeToCloseModal);
   } catch (error) {
     dispatch(channelError({ error }));
   }
@@ -110,7 +112,7 @@ export const createChannel = (attributes) => async (dispatch) => {
     dispatch(channelSuccess());
     setTimeout(() => {
       dispatch(closeModal());
-    }, 2000);
+    }, timeToCloseModal);
   } catch (error) {
     dispatch(channelError({ error }));
   }
@@ -124,7 +126,7 @@ export const renameChannel = (attributes, channelId) => async (dispatch) => {
     dispatch(channelSuccess());
     setTimeout(() => {
       dispatch(closeModal());
-    }, 2000);
+    }, timeToCloseModal);
   } catch (error) {
     dispatch(channelError({ error }));
   }
@@ -138,7 +140,7 @@ export const removeChannel = (channelId) => async (dispatch) => {
     dispatch(channelSuccess());
     setTimeout(() => {
       dispatch(closeModal());
-    }, 2000);
+    }, timeToCloseModal);
   } catch (error) {
     dispatch(channelError({ error }));
   }
