@@ -88,58 +88,37 @@ const {
 } = modalSlice.actions;
 
 const days = 5;
+const setNickname = ({ nickname }) => {
+  Cookies.set('nickname', nickname, { expires: days });
+};
+const createChannel = async ({ attributes }) => {
+  const url = routes.channelsPath();
+  await axios.post(url, { data: { attributes } });
+};
+const renameChannel = async ({ attributes, channelId }) => {
+  const url = routes.channelPath(channelId);
+  await axios.patch(url, { data: { attributes } });
+};
+const removeChannel = async ({ channelId }) => {
+  const url = routes.channelPath(channelId);
+  await axios.delete(url);
+};
+
+const modalOperationsMap = {
+  setNick: setNickname,
+  create: createChannel,
+  rename: renameChannel,
+  remove: removeChannel,
+};
 const timeToCloseModal = 2000;
-
-export const setNickName = ({ nickname }) => async (dispatch) => {
+export const getTheOperation = (type, params) => (dispatch) => {
   dispatch(channelRequesting());
   try {
-    Cookies.set('nickname', nickname, { expires: days });
+    modalOperationsMap[type](params);
     dispatch(channelSuccess());
     setTimeout(() => {
       dispatch(closeModal());
-      window.location.reload();
-    }, timeToCloseModal);
-  } catch (error) {
-    dispatch(channelError({ error }));
-  }
-};
-
-export const createChannel = (attributes) => async (dispatch) => {
-  dispatch(channelRequesting());
-  try {
-    const url = routes.channelsPath();
-    await axios.post(url, { data: { attributes } });
-    dispatch(channelSuccess());
-    setTimeout(() => {
-      dispatch(closeModal());
-    }, timeToCloseModal);
-  } catch (error) {
-    dispatch(channelError({ error }));
-  }
-};
-
-export const renameChannel = (attributes, channelId) => async (dispatch) => {
-  dispatch(channelRequesting());
-  try {
-    const url = routes.channelPath(channelId);
-    await axios.patch(url, { data: { attributes } });
-    dispatch(channelSuccess());
-    setTimeout(() => {
-      dispatch(closeModal());
-    }, timeToCloseModal);
-  } catch (error) {
-    dispatch(channelError({ error }));
-  }
-};
-
-export const removeChannel = (channelId) => async (dispatch) => {
-  dispatch(channelRequesting());
-  try {
-    const url = routes.channelPath(channelId);
-    await axios.delete(url);
-    dispatch(channelSuccess());
-    setTimeout(() => {
-      dispatch(closeModal());
+      if (type === 'setNick') window.location.reload();
     }, timeToCloseModal);
   } catch (error) {
     dispatch(channelError({ error }));

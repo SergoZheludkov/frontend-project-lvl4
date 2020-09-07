@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import { Modal, Button } from 'react-bootstrap';
 import _ from 'lodash';
 import { successIcon, spinner } from '../icons';
-import { createChannel, closeModal } from '../../slices';
+import { getTheOperation, closeModal } from '../../slices';
 
 const getInfoText = (status, errors) => {
   switch (status) {
@@ -33,7 +33,7 @@ const getButtonFilling = (status) => {
 };
 // ------------------------------------------------------------------------
 const mapStateToProps = ({ modalWindows: { type, status, errors } }) => ({ type, status, errors });
-const actionCreators = { closeModal, createChannel };
+const actionCreators = { closeModal, getTheOperation };
 
 const Create = (props) => {
   const {
@@ -41,7 +41,7 @@ const Create = (props) => {
     status,
     errors: networkErrors,
     closeModal: closeModalWindow,
-    createChannel: createNewChannel,
+    getTheOperation: getOperation,
   } = props;
   if (type !== 'create') return null;
   // ------------------------------Formik------------------------------
@@ -58,7 +58,8 @@ const Create = (props) => {
     },
     validationSchema: schema,
     onSubmit: ({ channelName }) => {
-      createNewChannel({ name: channelName.trim() });
+      const attributes = { name: channelName.trim() };
+      getOperation('create', { attributes });
     },
     onReset: () => {
       closeModalWindow();

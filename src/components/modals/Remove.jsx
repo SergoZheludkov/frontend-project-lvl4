@@ -5,7 +5,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { createSelector } from 'reselect';
 import _ from 'lodash';
 import { successIcon, spinner } from '../icons';
-import { closeModal, removeChannel } from '../../slices';
+import { closeModal, getTheOperation } from '../../slices';
 
 const getInfoText = (status, errors, channelData) => {
   switch (status) {
@@ -47,7 +47,7 @@ const mapStateToProps = (state) => ({
   errors: state.modalWindows.errors,
   channelData: getCurrentChannelMessages(state),
 });
-const actionCreators = { closeModal, removeChannel };
+const actionCreators = { closeModal, getTheOperation };
 
 const Remove = (props) => {
   const {
@@ -56,7 +56,7 @@ const Remove = (props) => {
     status,
     errors: networkErrors,
     closeModal: closeModalWindow,
-    removeChannel: removeSelectedChannel,
+    getTheOperation: getOperation,
   } = props;
   if (type !== 'remove') return null;
 
@@ -66,7 +66,7 @@ const Remove = (props) => {
   };
   const handleRemove = (event) => {
     event.preventDefault();
-    removeSelectedChannel(channelData.id);
+    getOperation('remove', { channelId: channelData.id });
   };
   // ------------------------------Classes------------------------------
   const buttonClasses = cn({

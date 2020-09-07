@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import { Modal, Button } from 'react-bootstrap';
 import _ from 'lodash';
 import { successIcon, spinner } from '../icons';
-import { setNickName } from '../../slices';
+import { getTheOperation } from '../../slices';
 
 const getButtonFilling = (status) => {
   switch (status) {
@@ -20,10 +20,10 @@ const getButtonFilling = (status) => {
 };
 // ------------------------------------------------------------------------
 const mapStateToProps = ({ modalWindows: { type, status } }) => ({ type, status });
-const actionCreators = { setNickName };
+const actionCreators = { getTheOperation };
 
 const Identifier = (props) => {
-  const { type, status, setNickName: setNick } = props;
+  const { type, status, getTheOperation: getOperation } = props;
   if (type !== 'identification') return null;
   // ------------------------------Formik------------------------------
   const schema = yup.object().shape({
@@ -39,7 +39,7 @@ const Identifier = (props) => {
     },
     validationSchema: schema,
     onSubmit: ({ nickname }) => {
-      setNick({ nickname: nickname.trim() });
+      getOperation('setNick', { nickname: nickname.trim() });
     },
   });
   const formikError = formik.errors.nickname;

@@ -7,7 +7,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { createSelector } from 'reselect';
 import _ from 'lodash';
 import { successIcon, spinner } from '../icons';
-import { closeModal, renameChannel } from '../../slices';
+import { closeModal, getTheOperation } from '../../slices';
 
 const getInfoText = (status, errors) => {
   switch (status) {
@@ -48,7 +48,7 @@ const mapStateToProps = (state) => ({
   errors: state.modalWindows.errors,
   channelData: getCurrentChannelMessages(state),
 });
-const actionCreators = { closeModal, renameChannel };
+const actionCreators = { closeModal, getTheOperation };
 
 const Rename = (props) => {
   const {
@@ -57,7 +57,7 @@ const Rename = (props) => {
     status,
     errors: networkErrors,
     closeModal: closeModalWindow,
-    renameChannel: renameSelectedChannel,
+    getTheOperation: getOperation,
   } = props;
   if (type !== 'rename') return null;
   // ------------------------------Formik------------------------------
@@ -74,7 +74,9 @@ const Rename = (props) => {
     },
     validationSchema: schema,
     onSubmit: ({ channelName }) => {
-      renameSelectedChannel({ name: channelName.trim() }, channelData.id);
+      const attributes = { name: channelName.trim() };
+      const channelId = channelData.id;
+      getOperation('rename', { attributes, channelId });
     },
     onReset: () => closeModalWindow(),
   });
