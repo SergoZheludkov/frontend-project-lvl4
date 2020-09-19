@@ -2,10 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
 import { Modal, Button } from 'react-bootstrap';
-import { createSelector } from 'reselect';
 import _ from 'lodash';
 import { successIcon, spinner } from '../icons';
 import { closeModal, getTheOperation } from '../../slices';
+import { currentChannelDataSelector } from '../../selectors';
 
 const getInfoText = (status, errors, channelData) => {
   switch (status) {
@@ -32,20 +32,11 @@ const getButtonFilling = (status) => {
   }
 };
 // ------------------------------------------------------------------------
-const getChannels = (state) => state.channelsBox.channels;
-const getSelectedChannelId = (state) => state.modalWindows.channelId;
-
-const getCurrentChannelMessages = createSelector(
-  getChannels,
-  getSelectedChannelId,
-  (channels, selectedChannelId) => _.find(channels, { id: selectedChannelId }),
-);
-// ------------------------------------------------------------------------
 const mapStateToProps = (state) => ({
   type: state.modalWindows.type,
   status: state.modalWindows.status,
   errors: state.modalWindows.errors,
-  channelData: getCurrentChannelMessages(state),
+  channelData: currentChannelDataSelector(state),
 });
 const actionCreators = { closeModal, getTheOperation };
 
@@ -60,12 +51,10 @@ const Remove = (props) => {
   } = props;
   if (type !== 'remove') return null;
 
-  const handleReset = (event) => {
-    event.preventDefault();
+  const handleReset = () => {
     closeModalWindow();
   };
-  const handleRemove = (event) => {
-    event.preventDefault();
+  const handleRemove = () => {
     getOperation('remove', { channelId: channelData.id });
   };
   // ------------------------------Classes------------------------------

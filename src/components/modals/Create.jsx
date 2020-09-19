@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
 import { useFormik } from 'formik';
@@ -45,6 +45,7 @@ const Create = (props) => {
   } = props;
   if (type !== 'create') return null;
   // ------------------------------Formik------------------------------
+  const inputRef = useRef('');
   const schema = yup.object().shape({
     channelName: yup.string()
       .required()
@@ -54,7 +55,7 @@ const Create = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      channelName: '',
+      channelName: inputRef.current,
     },
     validationSchema: schema,
     onSubmit: ({ channelName }) => {
@@ -66,6 +67,10 @@ const Create = (props) => {
     },
   });
   const formikError = formik.errors.channelName;
+
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
   // ------------------------------Classes------------------------------
   const inputClasses = cn({
     'mt-1': true,
@@ -96,6 +101,7 @@ const Create = (props) => {
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <input
+            ref={inputRef}
             id="channelName"
             name="channelName"
             type="text"

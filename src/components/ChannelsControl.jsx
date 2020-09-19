@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { createChannelIcon } from './icons';
-import { openCreateModal } from '../slices';
+import { openModal } from '../slices';
 
-const actionCreators = { openCreateModal };
+const actionCreators = { openModal };
 
 const createIconTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
@@ -13,11 +13,10 @@ const createIconTooltip = (props) => (
 );
 
 const ChannelsControl = (props) => {
-  const { openCreateModal: openModalWindow } = props;
+  const { openModal: openModalWindow } = props;
 
-  const handleClickAdd = (event) => {
-    event.preventDefault();
-    openModalWindow();
+  const handleClickAdd = () => {
+    openModalWindow({ type: 'create', channelId: null });
   };
 
   return (
@@ -32,7 +31,7 @@ const ChannelsControl = (props) => {
           {createChannelIcon}
         </OverlayTrigger>
       </div>
-   </div>
+    </div>
   );
 };
 

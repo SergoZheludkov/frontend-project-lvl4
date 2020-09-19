@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Modal, Button } from 'react-bootstrap';
-import { createSelector } from 'reselect';
 import _ from 'lodash';
 import { successIcon, spinner } from '../icons';
 import { closeModal, getTheOperation } from '../../slices';
+import { currentChannelDataSelector } from '../../selectors';
 
 const getInfoText = (status, errors) => {
   switch (status) {
@@ -33,20 +33,11 @@ const getButtonFilling = (status) => {
   }
 };
 // ------------------------------------------------------------------------
-const getChannels = (state) => state.channelsBox.channels;
-const getSelectedChannelId = (state) => state.modalWindows.channelId;
-
-const getCurrentChannelMessages = createSelector(
-  getChannels,
-  getSelectedChannelId,
-  (channels, selectedChannelId) => _.find(channels, { id: selectedChannelId }),
-);
-// ------------------------------------------------------------------------
 const mapStateToProps = (state) => ({
   type: state.modalWindows.type,
   status: state.modalWindows.status,
   errors: state.modalWindows.errors,
-  channelData: getCurrentChannelMessages(state),
+  channelData: currentChannelDataSelector(state),
 });
 const actionCreators = { closeModal, getTheOperation };
 
@@ -61,6 +52,7 @@ const Rename = (props) => {
   } = props;
   if (type !== 'rename') return null;
   // ------------------------------Formik------------------------------
+  const inputRef = useRef(channelData.name);
   const schema = yup.object().shape({
     channelName: yup.string()
       .required()
@@ -70,7 +62,7 @@ const Rename = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      channelName: channelData.name,
+      channelName: inputRef.current,
     },
     validationSchema: schema,
     onSubmit: ({ channelName }) => {
@@ -81,6 +73,11 @@ const Rename = (props) => {
     onReset: () => closeModalWindow(),
   });
   const formikError = formik.errors.channelName;
+
+  useEffect(() => {
+    inputRef.current.focus();
+    inputRef.current.select();
+  }, []);
   // ------------------------------Classes------------------------------
   const inputClasses = cn({
     'mt-1': true,
@@ -111,6 +108,7 @@ const Rename = (props) => {
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <input
+            ref={inputRef}
             id="channelName"
             name="channelName"
             type="text"

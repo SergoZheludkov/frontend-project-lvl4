@@ -7,48 +7,25 @@ import _ from 'lodash';
 import routes from '../routes';
 
 // ------------------------------------------------------------------------
-const messagesInputSlice = createSlice({
-  name: 'messagesInput',
-  initialState: {
-    sendingState: 'none',
-    error: null,
-  },
-  reducers: {
-    messageSending: (state) => ({ ...state, sendingState: 'requesting' }),
-    messageSended: (state) => ({ ...state, sendingState: 'success' }),
-    messageSendingError: (state, action) => ({ ...state, sendingState: 'failed', error: action.payload.error }),
-  },
-});
-const { messageSending, messageSended, messageSendingError } = messagesInputSlice.actions;
-
-export const addMessage = (attributes, channelId) => async (dispatch) => {
-  dispatch(messageSending());
-  try {
-    const url = routes.channelMessagesPath(channelId);
-    await axios.post(url, { data: { attributes } });
-    dispatch(messageSended());
-  } catch (error) {
-    dispatch(messageSendingError({ error }));
-  }
-};
-// ------------------------------------------------------------------------
 const messagesBoxSlice = createSlice({
   name: 'messagesBox',
   initialState: {
     messages: gon.messages,
   },
   reducers: {
-    addMessage: (state, action) => (
-      { messages: [...state.messages, action.payload.attributes] }
-    ),
-    removeMessages: (state, action) => (
-      { messages: _.reject(state.messages, { channelId: action.payload.id }) }
-    ),
+    addMessage: (state, { payload }) => {
+      state.messages.push(payload.attributes);
+    },
+  },
+  extraReducers: {
+    'channelsBox/removeChannel': (state, { payload }) => {
+      state.messages = _.reject(state.messages, { channelId: payload.id });
+    },
   },
 });
 // ------------------------------------------------------------------------
 const modalSlice = createSlice({
-  name: 'modalWindow',
+  name: 'modalWindows',
   initialState: {
     status: 'none',
     type: null,
@@ -56,10 +33,10 @@ const modalSlice = createSlice({
     errors: null,
   },
   reducers: {
-    openIdentificationModal: (state) => ({ ...state, type: 'identification' }),
-    openCreateModal: (state) => ({ ...state, type: 'create' }),
-    openRenameModal: (state, action) => ({ ...state, type: 'rename', channelId: action.payload.id }),
-    openRemoveModal: (state, action) => ({ ...state, type: 'remove', channelId: action.payload.id }),
+    openModal: (state, { payload }) => {
+      state.type = payload.type;
+      state.channelId = payload.channelId;
+    },
     closeModal: () => ({
       status: 'none',
       type: null,
@@ -67,54 +44,50 @@ const modalSlice = createSlice({
       errors: null,
     }),
 
-    channelRequesting: (state) => ({ ...state, status: 'requesting' }),
-    channelSuccess: (state) => ({ ...state, status: 'success' }),
-    channelError: (state, action) => ({ ...state, status: 'failed', errors: action.payload.error.message }),
+    channelRequesting: (state) => {
+      state.status = 'requesting';
+    },
+    channelSuccess: (state) => {
+      state.status = 'success';
+    },
+    channelError: (state, { payload }) => {
+      state.status = 'failed';
+      state.errors = payload.error.message;
+    },
   },
 });
 
-export const {
-  openIdentificationModal,
-  openCreateModal,
-  openRenameModal,
-  openRemoveModal,
-  closeModal,
-} = modalSlice.actions;
-
-const {
-  channelRequesting,
-  channelSuccess,
-  channelError,
-} = modalSlice.actions;
+export const { openModal, closeModal } = modalSlice.actions;
+const { channelRequesting, channelSuccess, channelError } = modalSlice.actions;
 
 const days = 5;
-const setNickname = ({ nickname }) => {
-  Cookies.set('nickname', nickname, { expires: days });
+const setNickname = (setCookie) => ({ nickname }) => {
+  setCookie('nickname', nickname, { expires: days });
 };
-const createChannel = async ({ attributes }) => {
+const createChannel = (post) => async ({ attributes }) => {
   const url = routes.channelsPath();
-  await axios.post(url, { data: { attributes } });
+  await post(url, { data: { attributes } });
 };
-const renameChannel = async ({ attributes, channelId }) => {
+const renameChannel = (patch) => async ({ attributes, channelId }) => {
   const url = routes.channelPath(channelId);
-  await axios.patch(url, { data: { attributes } });
+  await patch(url, { data: { attributes } });
 };
-const removeChannel = async ({ channelId }) => {
+const removeChannel = (del) => async ({ channelId }) => {
   const url = routes.channelPath(channelId);
-  await axios.delete(url);
+  await del(url);
 };
 
 const modalOperationsMap = {
-  setNick: setNickname,
-  create: createChannel,
-  rename: renameChannel,
-  remove: removeChannel,
+  setNick: setNickname(Cookies.set),
+  create: createChannel(axios.post),
+  rename: renameChannel(axios.patch),
+  remove: removeChannel(axios.delete),
 };
 const timeToCloseModal = 2000;
-export const getTheOperation = (type, params) => (dispatch) => {
+export const getTheOperation = (type, params) => async (dispatch) => {
   dispatch(channelRequesting());
   try {
-    modalOperationsMap[type](params);
+    await modalOperationsMap[type](params);
     dispatch(channelSuccess());
     setTimeout(() => {
       dispatch(closeModal());
@@ -132,17 +105,18 @@ const channelsBoxSlice = createSlice({
     currentChannelId: gon.currentChannelId,
   },
   reducers: {
-    changeCurrentChannel: (state, action) => ({ ...state, currentChannelId: action.payload.id }),
-    addChannel: (state, action) => (
-      { ...state, channels: [...state.channels, action.payload.attributes] }
-    ),
-    renameChannel: (state, action) => {
-      const selectedChannel = _.find(state.channels, { id: action.payload.id });
-      selectedChannel.name = action.payload.attributes.name;
+    changeCurrentChannel: (state, { payload }) => {
+      state.currentChannelId = payload.id;
     },
-    removeChannel: (state, action) => {
-      const filtredChannels = _.reject(state.channels, { id: action.payload.id });
-      return { ...state, channels: filtredChannels };
+    addChannel: (state, { payload }) => {
+      state.channels.push(payload.attributes);
+    },
+    renameChannel: (state, { payload }) => {
+      const selectedChannel = _.find(state.channels, { id: payload.id });
+      selectedChannel.name = payload.attributes.name;
+    },
+    removeChannel: (state, { payload }) => {
+      state.channels = _.reject(state.channels, { id: payload.id });
     },
   },
 });
@@ -150,7 +124,7 @@ export const { changeCurrentChannel } = channelsBoxSlice.actions;
 // ------------------------------------------------------------------------
 export default combineReducers({
   messagesBox: messagesBoxSlice.reducer,
-  messageInput: messagesInputSlice.reducer,
+
   channelsBox: channelsBoxSlice.reducer,
   modalWindows: modalSlice.reducer,
 });

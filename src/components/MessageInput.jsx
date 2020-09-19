@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { connect } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import axios from 'axios';
 import { Button, Spinner } from 'react-bootstrap';
-import { addMessage } from '../slices';
-import Context from './Context';
+import Context from '../context';
+import routes from '../routes';
 
 const spinner = (
   <Spinner
@@ -17,17 +18,30 @@ const spinner = (
   />
 );
 
+const addMessage = (props) => async ({ message }, { setSubmitting, setErrors, resetForm }) => {
+  const { currentChannelId, nickname } = props;
+  const attributes = { nickname, text: message };
+  try {
+    const url = routes.channelMessagesPath(currentChannelId);
+    await axios.post(url, { data: { attributes } });
+    setSubmitting(false);
+    resetForm();
+  } catch (error) {
+    setErrors({ message: error.message });
+    setSubmitting(false);
+  }
+};
+
 const mapStateToProps = ({
-  messageInput: { sendedState, error },
   channelsBox: { currentChannelId },
-}) => ({ currentChannelId, sendedState, error });
+}) => ({ currentChannelId });
 
 const actionCreators = {
   addMessage,
 };
 
 const Input = (props) => {
-  const { currentChannelId, sendedState, addMessage: sendMessage } = props;
+  const { currentChannelId } = props;
   const { nickname } = useContext(Context);
 
   const schema = yup.object().shape({
@@ -41,14 +55,10 @@ const Input = (props) => {
       message: '',
     },
     validationSchema: schema,
-    onSubmit: ({ message }) => {
-      sendMessage({ nickname, text: message }, currentChannelId);
-      formik.setValues({ message: '' });
-    },
+    onSubmit: addMessage({ currentChannelId, nickname }),
   });
 
-  const requesting = sendedState === 'requesting';
-  const variant = requesting ? 'outline-secondary' : 'outline-primary';
+  const variant = formik.isSubmitting ? 'outline-secondary' : 'outline-primary';
   return (
     <form className="d-flex" onSubmit={formik.handleSubmit}>
       <input
@@ -57,12 +67,12 @@ const Input = (props) => {
         type="text"
         className="form-control"
         onChange={formik.handleChange}
-        disabled={requesting}
+        disabled={formik.isSubmitting}
         value={formik.values.message}
         placeholder="Input your message"
       />
-      <Button type="submit" disabled={requesting} variant={variant}>
-          {requesting ? spinner : 'Send'}
+      <Button type="submit" disabled={formik.isSubmitting} variant={variant}>
+          {formik.isSubmitting ? spinner : 'Send'}
       </Button>
     </form>
   );

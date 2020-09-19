@@ -5,27 +5,21 @@ import ChannelsControl from './ChannelsControl';
 import ChannelsList from './ChannelsList';
 import MessageInput from './MessageInput';
 import MessagesBox from './MessagesBox';
-import Context from './Context';
-import getModal from './modals';
-import { openIdentificationModal } from '../slices';
+import Modal from './Modal';
+import Context from '../context';
 
-const actionCreators = { openIdentificationModal };
+import { openModal } from '../slices';
+
+const actionCreators = { openModal };
 
 const App = (props) => {
-  const { openIdentificationModal: runIdentification } = props;
+  const { openModal: openModalWindow } = props;
   const { nickname } = useContext(Context);
-  if (!nickname) runIdentification();
+  if (!nickname) openModalWindow({ type: 'identification', channelId: null });
 
-  const IdentificationModal = getModal('identification');
-  const CreateModal = getModal('create');
-  const RenameModal = getModal('rename');
-  const Remove = getModal('remove');
   return (
     <Row className="h-100 pb-5 overflow-auto" >
-      <IdentificationModal />
-      <CreateModal />
-      <RenameModal />
-      <Remove />
+      <Modal />
       <Col className="flex-column overflow-auto h-auto mh-100" sm={3}>
         <ChannelsControl />
         <ChannelsList />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
 import { useFormik } from 'formik';
@@ -26,6 +26,7 @@ const Identifier = (props) => {
   const { type, status, getTheOperation: getOperation } = props;
   if (type !== 'identification') return null;
   // ------------------------------Formik------------------------------
+  const nicknameRef = useRef('');
   const schema = yup.object().shape({
     nickname: yup.string()
       .required()
@@ -35,7 +36,7 @@ const Identifier = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      nickname: '',
+      nickname: nicknameRef.current,
     },
     validationSchema: schema,
     onSubmit: ({ nickname }) => {
@@ -43,6 +44,10 @@ const Identifier = (props) => {
     },
   });
   const formikError = formik.errors.nickname;
+
+  useEffect(() => {
+    nicknameRef.current.focus();
+  }, []);
   // ------------------------------Classes------------------------------
   const inputClasses = cn({
     'mt-1': true,
@@ -70,6 +75,7 @@ const Identifier = (props) => {
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <input
+            ref={nicknameRef}
             id="nickname"
             name="nickname"
             type="text"
