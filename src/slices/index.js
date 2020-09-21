@@ -2,10 +2,8 @@ import { combineReducers } from 'redux';
 import { createSlice } from '@reduxjs/toolkit';
 import gon from 'gon';
 import axios from 'axios';
-
 import _ from 'lodash';
 import routes from '../routes';
-
 // ------------------------------------------------------------------------
 const messagesBoxSlice = createSlice({
   name: 'messagesBox',
@@ -124,7 +122,6 @@ export const { changeCurrentChannel } = channelsBoxSlice.actions;
 // ------------------------------------------------------------------------
 export default combineReducers({
   messagesBox: messagesBoxSlice.reducer,
-
   channelsBox: channelsBoxSlice.reducer,
   modalWindows: modalSlice.reducer,
 });
