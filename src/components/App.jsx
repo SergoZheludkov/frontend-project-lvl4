@@ -1,21 +1,18 @@
 import React, { useContext } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ChannelsControl from './ChannelsControl';
 import ChannelsList from './ChannelsList';
 import MessageInput from './MessageInput';
 import MessagesBox from './MessagesBox';
 import Modal from './Modal';
 import Context from '../context';
-
 import { openModal } from '../slices';
 
-const actionCreators = { openModal };
-
-const App = (props) => {
-  const { openModal: openModalWindow } = props;
+const App = () => {
+  const dispatch = useDispatch();
   const { nickname } = useContext(Context);
-  if (!nickname) openModalWindow({ type: 'identification', channelId: null });
+  if (!nickname) dispatch(openModal({ type: 'identification', channelId: null }));
 
   return (
     <Row className="h-100 pb-5 overflow-auto" >
@@ -32,4 +29,4 @@ const App = (props) => {
   );
 };
 
-export default connect(null, actionCreators)(App);
+export default App;

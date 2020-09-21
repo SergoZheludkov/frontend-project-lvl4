@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
@@ -32,16 +32,8 @@ const addMessage = (props) => async ({ message }, { setSubmitting, setErrors, re
   }
 };
 
-const mapStateToProps = ({
-  channelsBox: { currentChannelId },
-}) => ({ currentChannelId });
-
-const actionCreators = {
-  addMessage,
-};
-
-const Input = (props) => {
-  const { currentChannelId } = props;
+const Input = () => {
+  const currentChannelId = useSelector((state) => state.channelsBox.currentChannelId);
   const { nickname } = useContext(Context);
 
   const schema = yup.object().shape({
@@ -78,4 +70,4 @@ const Input = (props) => {
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Input);
+export default Input;

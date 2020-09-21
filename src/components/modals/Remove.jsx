@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import cn from 'classnames';
 import { Modal, Button } from 'react-bootstrap';
 import _ from 'lodash';
@@ -32,30 +32,19 @@ const getButtonFilling = (status) => {
   }
 };
 // ------------------------------------------------------------------------
-const mapStateToProps = (state) => ({
-  type: state.modalWindows.type,
-  status: state.modalWindows.status,
-  errors: state.modalWindows.errors,
-  channelData: currentChannelDataSelector(state),
-});
-const actionCreators = { closeModal, getTheOperation };
-
-const Remove = (props) => {
-  const {
-    type,
-    channelData,
-    status,
-    errors: networkErrors,
-    closeModal: closeModalWindow,
-    getTheOperation: getOperation,
-  } = props;
+const Remove = () => {
+  const type = useSelector(({ modalWindows }) => modalWindows.type);
+  const status = useSelector(({ modalWindows }) => modalWindows.status);
+  const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
+  const channelData = useSelector(currentChannelDataSelector);
+  const dispatch = useDispatch();
   if (type !== 'remove') return null;
 
   const handleReset = () => {
-    closeModalWindow();
+    dispatch(closeModal());
   };
   const handleRemove = () => {
-    getOperation('remove', { channelId: channelData.id });
+    dispatch(getTheOperation('remove', { channelId: channelData.id }));
   };
   // ------------------------------Classes------------------------------
   const buttonClasses = cn({
@@ -105,4 +94,4 @@ const Remove = (props) => {
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Remove);
+export default Remove;

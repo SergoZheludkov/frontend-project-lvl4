@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -32,17 +32,12 @@ const getButtonFilling = (status) => {
   }
 };
 // ------------------------------------------------------------------------
-const mapStateToProps = ({ modalWindows: { type, status, errors } }) => ({ type, status, errors });
-const actionCreators = { closeModal, getTheOperation };
+const Create = () => {
+  const type = useSelector(({ modalWindows }) => modalWindows.type);
+  const status = useSelector(({ modalWindows }) => modalWindows.status);
+  const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
+  const dispatch = useDispatch();
 
-const Create = (props) => {
-  const {
-    type,
-    status,
-    errors: networkErrors,
-    closeModal: closeModalWindow,
-    getTheOperation: getOperation,
-  } = props;
   if (type !== 'create') return null;
   // ------------------------------Formik------------------------------
   const inputRef = useRef('');
@@ -60,10 +55,10 @@ const Create = (props) => {
     validationSchema: schema,
     onSubmit: ({ channelName }) => {
       const attributes = { name: channelName.trim() };
-      getOperation('create', { attributes });
+      dispatch(getTheOperation('create', { attributes }));
     },
     onReset: () => {
-      closeModalWindow();
+      dispatch(closeModal());
     },
   });
   const formikError = formik.errors.channelName;
@@ -138,4 +133,4 @@ const Create = (props) => {
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Create);
+export default Create;

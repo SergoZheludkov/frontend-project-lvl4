@@ -1,9 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Modal, Button } from 'react-bootstrap';
+import Cookies from 'js-cookie';
 import _ from 'lodash';
 import { successIcon, spinner } from '../icons';
 import { getTheOperation } from '../../slices';
@@ -19,11 +20,10 @@ const getButtonFilling = (status) => {
   }
 };
 // ------------------------------------------------------------------------
-const mapStateToProps = ({ modalWindows: { type, status } }) => ({ type, status });
-const actionCreators = { getTheOperation };
-
-const Identifier = (props) => {
-  const { type, status, getTheOperation: getOperation } = props;
+const Identifier = () => {
+  const type = useSelector(({ modalWindows }) => modalWindows.type);
+  const status = useSelector(({ modalWindows }) => modalWindows.status);
+  const dispatch = useDispatch();
   if (type !== 'identification') return null;
   // ------------------------------Formik------------------------------
   const nicknameRef = useRef('');
@@ -40,7 +40,7 @@ const Identifier = (props) => {
     },
     validationSchema: schema,
     onSubmit: ({ nickname }) => {
-      getOperation('setNick', { nickname: nickname.trim() });
+      dispatch(getTheOperation('setNick', { nickname: nickname.trim(), setCookie: Cookies.set }));
     },
   });
   const formikError = formik.errors.nickname;
@@ -103,4 +103,4 @@ const Identifier = (props) => {
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Identifier);
+export default Identifier;

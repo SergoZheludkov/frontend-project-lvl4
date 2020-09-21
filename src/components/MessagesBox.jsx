@@ -1,12 +1,9 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { currentChannelMessagesSelector } from '../selectors';
 
-// ------------------------------------------------------------------------
-const mapStateToProps = (state) => ({ messages: currentChannelMessagesSelector(state) });
-
-const MessagesBox = (props) => {
-  const { messages } = props;
+const MessagesBox = () => {
+  const messages = useSelector(currentChannelMessagesSelector);
 
   const renderedMessage = messages.map((m) => <div key={m.id}><b>{m.nickname}: </b>{m.text}</div>);
   return (
@@ -14,4 +11,4 @@ const MessagesBox = (props) => {
   );
 };
 
-export default connect(mapStateToProps)(MessagesBox);
+export default MessagesBox;

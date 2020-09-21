@@ -1,13 +1,8 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ListGroup, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { renameChannelIcon, removeChannelIcon } from './icons';
 import { changeCurrentChannel, openModal } from '../slices';
-
-const mapStateToProps = ({ channelsBox: { channels, currentChannelId } }) => (
-  { channels, currentChannelId }
-);
-const actionCreators = { changeCurrentChannel, openModal };
 
 const renameIconTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
@@ -21,24 +16,21 @@ const removeIconTooltip = (props) => (
   </Tooltip>
 );
 
-const renderChannelsList = (props) => {
-  const {
-    channels,
-    currentChannelId,
-    changeCurrentChannel: selectСhannel,
-    openModal: openModalWindow,
-  } = props;
+const renderChannelsList = () => {
+  const channels = useSelector((state) => state.channelsBox.channels);
+  const currentChannelId = useSelector((state) => state.channelsBox.currentChannelId);
+  const dispatch = useDispatch();
 
   const handleClickChannel = (id) => () => {
-    selectСhannel({ id });
+    dispatch(changeCurrentChannel({ id }));
   };
   // ------------------------------------------------------------------------
   const channelControlButtons = (channelId) => {
     const handleClickRename = (id) => () => {
-      openModalWindow({ type: 'rename', channelId: id });
+      dispatch(openModal({ type: 'rename', channelId: id }));
     };
     const handleClickRemove = (id) => () => {
-      openModalWindow({ type: 'remove', channelId: id });
+      dispatch(openModal({ type: 'remove', channelId: id }));
     };
     return (
       <div className="d-flex">
@@ -88,4 +80,4 @@ const renderChannelsList = (props) => {
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(renderChannelsList);
+export default renderChannelsList;

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -33,23 +33,13 @@ const getButtonFilling = (status) => {
   }
 };
 // ------------------------------------------------------------------------
-const mapStateToProps = (state) => ({
-  type: state.modalWindows.type,
-  status: state.modalWindows.status,
-  errors: state.modalWindows.errors,
-  channelData: currentChannelDataSelector(state),
-});
-const actionCreators = { closeModal, getTheOperation };
+const Rename = () => {
+  const type = useSelector(({ modalWindows }) => modalWindows.type);
+  const status = useSelector(({ modalWindows }) => modalWindows.status);
+  const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
+  const channelData = useSelector(currentChannelDataSelector);
+  const dispatch = useDispatch();
 
-const Rename = (props) => {
-  const {
-    type,
-    channelData,
-    status,
-    errors: networkErrors,
-    closeModal: closeModalWindow,
-    getTheOperation: getOperation,
-  } = props;
   if (type !== 'rename') return null;
   // ------------------------------Formik------------------------------
   const inputRef = useRef(channelData.name);
@@ -68,9 +58,9 @@ const Rename = (props) => {
     onSubmit: ({ channelName }) => {
       const attributes = { name: channelName.trim() };
       const channelId = channelData.id;
-      getOperation('rename', { attributes, channelId });
+      dispatch(getTheOperation('rename', { attributes, channelId }));
     },
-    onReset: () => closeModalWindow(),
+    onReset: () => dispatch(closeModal()),
   });
   const formikError = formik.errors.channelName;
 
@@ -145,4 +135,4 @@ const Rename = (props) => {
   );
 };
 
-export default connect(mapStateToProps, actionCreators)(Rename);
+export default Rename;

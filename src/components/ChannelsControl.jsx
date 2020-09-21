@@ -1,10 +1,8 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { createChannelIcon } from './icons';
 import { openModal } from '../slices';
-
-const actionCreators = { openModal };
 
 const createIconTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
@@ -12,11 +10,11 @@ const createIconTooltip = (props) => (
   </Tooltip>
 );
 
-const ChannelsControl = (props) => {
-  const { openModal: openModalWindow } = props;
+const ChannelsControl = () => {
+  const dispatch = useDispatch();
 
   const handleClickAdd = () => {
-    openModalWindow({ type: 'create', channelId: null });
+    dispatch(openModal({ type: 'create', channelId: null }));
   };
 
   return (
@@ -35,4 +33,4 @@ const ChannelsControl = (props) => {
   );
 };
 
-export default connect(null, actionCreators)(ChannelsControl);
+export default ChannelsControl;

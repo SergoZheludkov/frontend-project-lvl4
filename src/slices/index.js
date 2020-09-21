@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import { createSlice } from '@reduxjs/toolkit';
 import gon from 'gon';
 import axios from 'axios';
-import Cookies from 'js-cookie';
+
 import _ from 'lodash';
 import routes from '../routes';
 
@@ -61,27 +61,27 @@ export const { openModal, closeModal } = modalSlice.actions;
 const { channelRequesting, channelSuccess, channelError } = modalSlice.actions;
 
 const days = 5;
-const setNickname = (setCookie) => ({ nickname }) => {
+const setNickname = ({ nickname, setCookie }) => {
   setCookie('nickname', nickname, { expires: days });
 };
-const createChannel = (post) => async ({ attributes }) => {
+const createChannel = async ({ attributes }) => {
   const url = routes.channelsPath();
-  await post(url, { data: { attributes } });
+  await axios.post(url, { data: { attributes } });
 };
-const renameChannel = (patch) => async ({ attributes, channelId }) => {
+const renameChannel = async ({ attributes, channelId }) => {
   const url = routes.channelPath(channelId);
-  await patch(url, { data: { attributes } });
+  await axios.patch(url, { data: { attributes } });
 };
-const removeChannel = (del) => async ({ channelId }) => {
+const removeChannel = async ({ channelId }) => {
   const url = routes.channelPath(channelId);
-  await del(url);
+  await axios.delete(url);
 };
 
 const modalOperationsMap = {
-  setNick: setNickname(Cookies.set),
-  create: createChannel(axios.post),
-  rename: renameChannel(axios.patch),
-  remove: removeChannel(axios.delete),
+  setNick: setNickname,
+  create: createChannel,
+  rename: renameChannel,
+  remove: removeChannel,
 };
 const timeToCloseModal = 2000;
 export const getTheOperation = (type, params) => async (dispatch) => {

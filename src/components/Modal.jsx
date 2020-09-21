@@ -1,14 +1,11 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import getModal from './modals';
 
-const mapStateToProps = (state) => ({
-  type: state.modalWindows.type,
-});
-const Modal = (props) => {
-  const { type } = props;
+const Modal = () => {
+  const type = useSelector((state) => state.modalWindows.type);
   if (!type) return null;
   const CurrentModal = getModal(type);
   return <CurrentModal />;
 };
-export default connect(mapStateToProps)(Modal);
+export default Modal;
