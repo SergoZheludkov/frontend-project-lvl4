@@ -13,11 +13,15 @@
 * React
 * Redux (Redux toolkit)
 * React Bootstrap
+* i18next React
+* Reselect
+* Formik
+* Yup
 * Socket.io
 * Axios
-* Yup
-* Formik
-* Reselect
+
+
+
 
 ### Preview
-![Preview](https://i.ibb.co/GsBZsQj/https-sergozheludkov-frontend-lvl4-herokuapp-com-2020-09-07-16-56-59.png "Chat preview")
+![Preview](https://i.ibb.co/h18sdM8/chat-preview.png "Chat preview")
