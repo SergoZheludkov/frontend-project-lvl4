@@ -1,0 +1,60 @@
+{ 
+  "translation": {
+    "channelsControl": {
+      "header": "Channels"
+    },
+    "messageInput": {
+      "placeholder": "Input your message",
+      "sendButton": "Send"
+    },
+    "iconsTooltip": {
+      "create": "Create channel",
+      "rename": "Rename channel",
+      "remove": "Remove channel"
+    },
+    "modals": {
+      "identifier": {
+        "header": "Identification",
+        "placeholder": "Nickname",
+        "messages":{
+          "default": "Enter your nickname to use the chat"
+        },
+        "confirmButton": "Confirm"
+      },
+      "create": {
+        "header": "Create channel",
+        "placeholder": "Channel name",
+        "confirmButton": "Create",
+        "messages": {
+          "default": "Enter the name of the new channel",
+          "requesting": "Wait a moment. Channel creating...",
+          "success": "Congratulations! Channel created successfully"
+        }
+      },
+      "rename": {
+        "header": "Rename the channel",
+        "placeholder": "Channel name",
+        "confirmButton": "Rename",
+        "messages": {
+          "default": "Enter a new name of channel",
+          "requesting": "Wait a moment. Channel renaming...",
+          "success": "Congratulations! Channel renamed successfully"
+        }
+      },
+      "remove": {
+        "header": "Remove the channel",
+        "confirmButton": "Remove",
+        "messages": {
+          "default": "Do you want to remove the \"{{ channelName }}\" channel?\nAll messages will be removed too",
+          "requesting": "Wait a moment. Channel removing...",
+          "success": "Congratulations! Channel removed successfully."
+        }
+      }
+    },
+    "yupModalErrors": {
+      "required": "The field must not be empty",
+      "min": "The field must be at least 3 characters"
+    },
+    "cancelButton": "Cancel"
+  }
+}

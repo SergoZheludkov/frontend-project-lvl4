@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
@@ -35,6 +36,7 @@ const addMessage = (props) => async ({ message }, { setSubmitting, setErrors, re
 const Input = () => {
   const currentChannelId = useSelector((state) => state.channelsBox.currentChannelId);
   const { nickname } = useContext(Context);
+  const { t } = useTranslation();
 
   const schema = yup.object().shape({
     message: yup.string()
@@ -61,10 +63,10 @@ const Input = () => {
         onChange={formik.handleChange}
         disabled={formik.isSubmitting}
         value={formik.values.message}
-        placeholder="Input your message"
+        placeholder={t('messageInput.placeholder')}
       />
       <Button type="submit" disabled={formik.isSubmitting} variant={variant}>
-          {formik.isSubmitting ? spinner : 'Send'}
+          {formik.isSubmitting ? spinner : t('messageInput.sendButton')}
       </Button>
     </form>
   );

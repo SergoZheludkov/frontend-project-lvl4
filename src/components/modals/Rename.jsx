@@ -1,60 +1,28 @@
 import React, { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
 import { Modal, Button } from 'react-bootstrap';
 import _ from 'lodash';
-import { successIcon, spinner } from '../icons';
 import { closeModal, getTheOperation } from '../../slices';
 import { currentChannelDataSelector } from '../../selectors';
+import { getSchema, getInfoText, getButtonFilling } from './utilits';
 
-const getInfoText = (status, errors) => {
-  switch (status) {
-    case 'failed':
-      return _.capitalize(errors);
-    case 'requesting':
-      return 'Wait a moment. Channel renaming...';
-    case 'success':
-      return 'Congratulations. Channel renamed!';
-    default:
-      return 'Enter a new channel name';
-  }
-};
-
-const getButtonFilling = (status) => {
-  switch (status) {
-    case 'requesting':
-      return spinner;
-    case 'success':
-      return successIcon;
-    default:
-      return 'Rename';
-  }
-};
-// ------------------------------------------------------------------------
 const Rename = () => {
-  const type = useSelector(({ modalWindows }) => modalWindows.type);
   const status = useSelector(({ modalWindows }) => modalWindows.status);
   const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
   const channelData = useSelector(currentChannelDataSelector);
   const dispatch = useDispatch();
-
-  if (type !== 'rename') return null;
+  const { t } = useTranslation();
   // ------------------------------Formik------------------------------
   const inputRef = useRef(channelData.name);
-  const schema = yup.object().shape({
-    channelName: yup.string()
-      .required()
-      .min(3)
-      .trim(),
-  });
 
   const formik = useFormik({
     initialValues: {
       channelName: inputRef.current,
     },
-    validationSchema: schema,
+    validationSchema: getSchema('channelName'),
     onSubmit: ({ channelName }) => {
       const attributes = { name: channelName.trim() };
       const channelId = channelData.id;
@@ -94,7 +62,7 @@ const Rename = () => {
     <Modal show onHide={formik.handleReset} centered>
       <form onSubmit={formik.handleSubmit}>
         <Modal.Header>
-          <Modal.Title>Rename the channel</Modal.Title>
+          <Modal.Title>{t('modals.rename.header')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <input
@@ -106,11 +74,14 @@ const Rename = () => {
             onChange={formik.handleChange}
             disabled={inputDisabled}
             value={formik.values.channelName}
-            placeholder="Channel name"
+            placeholder={t('modals.rename.placeholder')}
           />
-          <div className={textClasses}>
-            {(formikError && _.capitalize(formikError)) || getInfoText(status, networkErrors)}
-          </div>
+          <label htmlFor="channelName" className={textClasses}>
+            {
+            (formikError && _.capitalize(formikError))
+            || getInfoText({ status, type: 'rename', errors: networkErrors })
+            }
+          </label>
           <div className="align-self-end mt-3">
             <Button
               onClick={formik.handleReset}
@@ -126,7 +97,7 @@ const Rename = () => {
               disabled={btnDisabled}
               className={buttonClasses}
             >
-              {getButtonFilling(status)}
+              {getButtonFilling({ status, type: 'rename' })}
             </Button>
           </div>
         </Modal.Body>

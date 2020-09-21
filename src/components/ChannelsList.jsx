@@ -1,25 +1,16 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { ListGroup, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import { ListGroup, OverlayTrigger } from 'react-bootstrap';
+import getIconTooltip from './iconTooltip';
 import { renameChannelIcon, removeChannelIcon } from './icons';
 import { changeCurrentChannel, openModal } from '../slices';
-
-const renameIconTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Rename channel
-  </Tooltip>
-);
-
-const removeIconTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Remove channel
-  </Tooltip>
-);
 
 const renderChannelsList = () => {
   const channels = useSelector((state) => state.channelsBox.channels);
   const currentChannelId = useSelector((state) => state.channelsBox.currentChannelId);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const handleClickChannel = (id) => () => {
     dispatch(changeCurrentChannel({ id }));
@@ -32,6 +23,8 @@ const renderChannelsList = () => {
     const handleClickRemove = (id) => () => {
       dispatch(openModal({ type: 'remove', channelId: id }));
     };
+    const renameIconTooltip = getIconTooltip(t('iconsTooltip.rename'));
+    const removeIconTooltip = getIconTooltip(t('iconsTooltip.remove'));
     return (
       <div className="d-flex">
         <div onClick={handleClickRename(channelId)}>

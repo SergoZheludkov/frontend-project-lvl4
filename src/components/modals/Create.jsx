@@ -1,58 +1,26 @@
 import React, { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
 import { Modal, Button } from 'react-bootstrap';
 import _ from 'lodash';
-import { successIcon, spinner } from '../icons';
 import { getTheOperation, closeModal } from '../../slices';
+import { getSchema, getInfoText, getButtonFilling } from './utilits';
 
-const getInfoText = (status, errors) => {
-  switch (status) {
-    case 'failed':
-      return _.capitalize(errors);
-    case 'requesting':
-      return 'Wait a moment. Channel creating...';
-    case 'success':
-      return 'Congratulations. Channel created!';
-    default:
-      return 'Enter the name of the new channel';
-  }
-};
-
-const getButtonFilling = (status) => {
-  switch (status) {
-    case 'requesting':
-      return spinner;
-    case 'success':
-      return successIcon;
-    default:
-      return 'Create';
-  }
-};
-// ------------------------------------------------------------------------
 const Create = () => {
-  const type = useSelector(({ modalWindows }) => modalWindows.type);
   const status = useSelector(({ modalWindows }) => modalWindows.status);
   const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
   const dispatch = useDispatch();
-
-  if (type !== 'create') return null;
+  const { t } = useTranslation();
   // ------------------------------Formik------------------------------
   const inputRef = useRef('');
-  const schema = yup.object().shape({
-    channelName: yup.string()
-      .required()
-      .min(3)
-      .trim(),
-  });
 
   const formik = useFormik({
     initialValues: {
       channelName: inputRef.current,
     },
-    validationSchema: schema,
+    validationSchema: getSchema('channelName'),
     onSubmit: ({ channelName }) => {
       const attributes = { name: channelName.trim() };
       dispatch(getTheOperation('create', { attributes }));
@@ -92,7 +60,7 @@ const Create = () => {
     <Modal show onHide={formik.handleReset} centered>
       <form onSubmit={formik.handleSubmit}>
         <Modal.Header>
-          <Modal.Title>Create channel</Modal.Title>
+          <Modal.Title>{t('modals.create.header')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <input
@@ -104,11 +72,14 @@ const Create = () => {
             onChange={formik.handleChange}
             disabled={inputDisabled}
             value={formik.values.channelName}
-            placeholder="Channel name"
+            placeholder={t('modals.create.placeholder')}
           />
-          <div className={textClasses}>
-            {(formikError && _.capitalize(formikError)) || getInfoText(status, networkErrors)}
-          </div>
+          <label htmlFor="channelName" className={textClasses}>
+            {
+            (formikError && _.capitalize(formikError))
+            || getInfoText({ status, type: 'create', errors: networkErrors })
+            }
+          </label>
           <div className="align-self-end mt-3">
             <Button
               onClick={formik.handleReset}
@@ -124,7 +95,7 @@ const Create = () => {
               disabled={btnDisabled}
               className={buttonClasses}
             >
-              {getButtonFilling(status)}
+              {getButtonFilling({ status, type: 'create' })}
             </Button>
           </div>
         </Modal.Body>

@@ -1,44 +1,18 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { Modal, Button } from 'react-bootstrap';
-import _ from 'lodash';
-import { successIcon, spinner } from '../icons';
 import { closeModal, getTheOperation } from '../../slices';
 import { currentChannelDataSelector } from '../../selectors';
+import { getInfoText, getButtonFilling } from './utilits';
 
-const getInfoText = (status, errors, channelData) => {
-  switch (status) {
-    case 'failed':
-      return _.capitalize(errors);
-    case 'requesting':
-      return 'Wait a moment. Channel removing...';
-    case 'success':
-      return 'Congratulations. Channel removed!';
-    default:
-      return `Do you want to remove the "${channelData && channelData.name}" channel?
-      All messages will be removed too`;
-  }
-};
-
-const getButtonFilling = (status) => {
-  switch (status) {
-    case 'requesting':
-      return spinner;
-    case 'success':
-      return successIcon;
-    default:
-      return 'Remove';
-  }
-};
-// ------------------------------------------------------------------------
 const Remove = () => {
-  const type = useSelector(({ modalWindows }) => modalWindows.type);
   const status = useSelector(({ modalWindows }) => modalWindows.status);
   const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
   const channelData = useSelector(currentChannelDataSelector);
   const dispatch = useDispatch();
-  if (type !== 'remove') return null;
+  const { t } = useTranslation();
 
   const handleReset = () => {
     dispatch(closeModal());
@@ -65,11 +39,16 @@ const Remove = () => {
   return (
     <Modal show onHide={handleReset} centered>
         <Modal.Header>
-          <Modal.Title>Remove the channel</Modal.Title>
+          <Modal.Title>{t('modals.remove.header')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <div className={textClasses}>
-            {getInfoText(status, networkErrors, channelData)}
+            {getInfoText({
+              status,
+              type: 'remove',
+              channelData,
+              errors: networkErrors,
+            })}
           </div>
           <div className="align-self-end">
           <Button
@@ -86,7 +65,7 @@ const Remove = () => {
             disabled={btnDisabled}
             className={buttonClasses}
           >
-            {getButtonFilling(status)}
+            {getButtonFilling({ status, type: 'remove' })}
           </Button>
           </div>
         </Modal.Body>

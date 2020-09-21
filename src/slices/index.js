@@ -4,6 +4,21 @@ import gon from 'gon';
 import axios from 'axios';
 import _ from 'lodash';
 import routes from '../routes';
+
+// ------------------------------------------------------------------------
+const languageSlice = createSlice({
+  name: 'language',
+  initialState: {
+    translations: ['en', 'ru'],
+    current: 'en',
+  },
+  reducers: {
+    changeCurrentLanguage: (state, { payload }) => {
+      state.current = payload.lang;
+    },
+  },
+});
+export const { changeCurrentLanguage } = languageSlice.actions;
 // ------------------------------------------------------------------------
 const messagesBoxSlice = createSlice({
   name: 'messagesBox',
@@ -121,6 +136,7 @@ const channelsBoxSlice = createSlice({
 export const { changeCurrentChannel } = channelsBoxSlice.actions;
 // ------------------------------------------------------------------------
 export default combineReducers({
+  language: languageSlice.reducer,
   messagesBox: messagesBoxSlice.reducer,
   channelsBox: channelsBoxSlice.reducer,
   modalWindows: modalSlice.reducer,

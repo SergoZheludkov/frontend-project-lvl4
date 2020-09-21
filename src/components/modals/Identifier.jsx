@@ -1,44 +1,26 @@
 import React, { useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
 import { Modal, Button } from 'react-bootstrap';
 import Cookies from 'js-cookie';
 import _ from 'lodash';
-import { successIcon, spinner } from '../icons';
 import { getTheOperation } from '../../slices';
+import { getSchema, getButtonFilling } from './utilits';
 
-const getButtonFilling = (status) => {
-  switch (status) {
-    case 'requesting':
-      return spinner;
-    case 'success':
-      return successIcon;
-    default:
-      return 'Confirm';
-  }
-};
-// ------------------------------------------------------------------------
 const Identifier = () => {
-  const type = useSelector(({ modalWindows }) => modalWindows.type);
   const status = useSelector(({ modalWindows }) => modalWindows.status);
   const dispatch = useDispatch();
-  if (type !== 'identification') return null;
+  const { t } = useTranslation();
   // ------------------------------Formik------------------------------
   const nicknameRef = useRef('');
-  const schema = yup.object().shape({
-    nickname: yup.string()
-      .required()
-      .min(3)
-      .trim(),
-  });
 
   const formik = useFormik({
     initialValues: {
       nickname: nicknameRef.current,
     },
-    validationSchema: schema,
+    validationSchema: getSchema('nickname'),
     onSubmit: ({ nickname }) => {
       dispatch(getTheOperation('setNick', { nickname: nickname.trim(), setCookie: Cookies.set }));
     },
@@ -71,7 +53,7 @@ const Identifier = () => {
     <Modal show centered>
       <form onSubmit={formik.handleSubmit}>
         <Modal.Header>
-          <Modal.Title>Identification</Modal.Title>
+          <Modal.Title>{t('modals.identifier.header')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <input
@@ -83,18 +65,18 @@ const Identifier = () => {
             onChange={formik.handleChange}
             disabled={inputDisabled}
             value={formik.values.nickname}
-            placeholder="Nickname"
+            placeholder={t('modals.identifier.placeholder')}
           />
-          <div className={textClasses}>
-            {(formikError && <div>{_.capitalize(formikError)}</div>) || 'Enter your nickname to use the chat'}
-          </div>
+          <label htmlFor="nickname" className={textClasses}>
+            {(formikError && <div>{_.capitalize(formikError)}</div>) || t('modals.identifier.messages.default')}
+          </label>
           <div className="align-self-end mt-3">
             <Button
               type="submit"
               disabled={btnDisabled}
               className={buttonClasses}
             >
-              {getButtonFilling(status)}
+              {getButtonFilling({ status, type: 'identifier' })}
             </Button>
           </div>
         </Modal.Body>

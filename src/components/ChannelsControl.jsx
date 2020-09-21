@@ -1,25 +1,22 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import { OverlayTrigger } from 'react-bootstrap';
+import getIconTooltip from './iconTooltip';
 import { createChannelIcon } from './icons';
 import { openModal } from '../slices';
 
-const createIconTooltip = (props) => (
-  <Tooltip id="button-tooltip" {...props}>
-    Create channel
-  </Tooltip>
-);
-
 const ChannelsControl = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const handleClickAdd = () => {
     dispatch(openModal({ type: 'create', channelId: null }));
   };
-
+  const createIconTooltip = getIconTooltip(t('iconsTooltip.create'));
   return (
     <div className="d-flex justify-content-between">
-      <div>Channels</div>
+      <div>{t('channelsControl.header')}</div>
       <div onClick={handleClickAdd}>
         <OverlayTrigger
           placement="top"
