@@ -1,71 +1,68 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { Modal, Button } from 'react-bootstrap';
-import { closeModal, getTheOperation } from '../../slices';
+import axios from 'axios';
+import _ from 'lodash';
 import { currentChannelDataSelector } from '../../selectors';
-import { getInfoText, getButtonFilling } from './utilits';
+import routes from '../../routes';
+import { closeModal } from '../../slices/modalSlice';
+
+const removeChannel = async (props) => {
+  const { onHide, setError, channelId } = props;
+  try {
+    const url = routes.channelPath(channelId);
+    await axios.delete(url);
+    onHide();
+  } catch (error) {
+    setError({ channelName: error.message });
+  }
+};
 
 const Remove = () => {
-  const status = useSelector(({ modalWindows }) => modalWindows.status);
-  const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
   const channelData = useSelector(currentChannelDataSelector);
-  const dispatch = useDispatch();
+  const [error, setError] = useState(null);
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const onHide = () => dispatch(closeModal());
 
-  const handleReset = () => {
-    dispatch(closeModal());
-  };
   const handleRemove = () => {
-    dispatch(getTheOperation('remove', { channelId: channelData.id }));
+    removeChannel({ onHide, setError, channelId: channelData.id });
   };
   // ------------------------------Classes------------------------------
-  const buttonClasses = cn({
-    'm-1': true,
-    'btn-danger': status !== 'success',
-    'btn-success': status === 'success',
-  });
-
   const textClasses = cn({
     'mb-2': true,
-    'text-danger': networkErrors,
-    'text-info': status === 'requesting',
-    'text-success': status === 'success',
+    'text-danger': error,
   });
   // ------------------------------------------------------------------------
-  const btnDisabled = networkErrors || status !== 'none';
-  // ------------------------------------------------------------------------
+  const channelName = channelData ? channelData.name : '';
   return (
-    <Modal show onHide={handleReset} centered>
+    <Modal show onHide={onHide} centered>
         <Modal.Header>
           <Modal.Title>{t('modals.remove.header')}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="d-flex flex-column">
           <div className={textClasses}>
-            {getInfoText({
-              status,
-              type: 'remove',
-              channelData,
-              errors: networkErrors,
-            })}
+            {
+              (error && _.capitalize(error))
+              || t('modals.remove.messages', { channelName })
+            }
           </div>
           <div className="align-self-end">
           <Button
-            onClick={handleReset}
+            onClick={onHide}
             type="button"
-            disabled={status === 'requesting'}
             className="m-1"
           >
-            Cancel
+            {t('cancelButton')}
           </Button>
           <Button
             onClick={handleRemove}
             type="submit"
-            disabled={btnDisabled}
-            className={buttonClasses}
+            className="m-1 btn-danger"
           >
-            {getButtonFilling({ status, type: 'remove' })}
+            {t('modals.remove.confirmButton')}
           </Button>
           </div>
         </Modal.Body>

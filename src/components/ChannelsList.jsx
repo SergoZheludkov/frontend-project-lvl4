@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { ListGroup, OverlayTrigger } from 'react-bootstrap';
 import getIconTooltip from './iconTooltip';
 import { renameChannelIcon, removeChannelIcon } from './icons';
-import { changeCurrentChannel, openModal } from '../slices';
+import { openModal } from '../slices/modalSlice';
+import { changeCurrentChannel } from '../slices/channelsBoxSlice';
 
 const renderChannelsList = () => {
   const channels = useSelector((state) => state.channelsBox.channels);

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { OverlayTrigger } from 'react-bootstrap';
 import getIconTooltip from './iconTooltip';
 import { createChannelIcon } from './icons';
-import { openModal } from '../slices';
+import { openModal } from '../slices/modalSlice';
 
 const ChannelsControl = () => {
   const dispatch = useDispatch();

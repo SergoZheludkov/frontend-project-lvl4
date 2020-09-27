@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { useFormik } from 'formik';
@@ -52,10 +52,16 @@ const Input = () => {
     onSubmit: addMessage({ currentChannelId, nickname }),
   });
 
+  const inputRef = useRef('');
+  useEffect(() => {
+    inputRef.current.focus();
+  });
+
   const variant = formik.isSubmitting ? 'outline-secondary' : 'outline-primary';
   return (
     <form className="d-flex" onSubmit={formik.handleSubmit}>
       <input
+        ref={inputRef}
         id="message"
         name="message"
         type="text"

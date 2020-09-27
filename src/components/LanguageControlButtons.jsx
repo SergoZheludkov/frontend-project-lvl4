@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from 'react-bootstrap';
 import i18n from '../i18n';
-import { changeCurrentLanguage } from '../slices';
+import { changeCurrentLanguage } from '../slices/languageSlice';
 
 const LanguageControlButtons = () => {
   const translations = useSelector((state) => state.language.translations);

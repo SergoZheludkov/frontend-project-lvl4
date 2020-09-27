@@ -1,33 +1,41 @@
 import React, { useRef, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import cn from 'classnames';
 import { useFormik } from 'formik';
 import { Modal, Button } from 'react-bootstrap';
+import axios from 'axios';
 import _ from 'lodash';
-import { getTheOperation, closeModal } from '../../slices';
-import { getSchema, getInfoText, getButtonFilling } from './utilits';
+import getSchema from './utilits';
+import routes from '../../routes';
+import { closeModal } from '../../slices/modalSlice';
+
+const createChannel = ({ onHide }) => async ({ channelName }, { setSubmitting, setErrors }) => {
+  const attributes = { name: channelName.trim() };
+  try {
+    const url = routes.channelsPath();
+    await axios.post(url, { data: { attributes } });
+    setSubmitting(false);
+    onHide();
+  } catch (error) {
+    setErrors({ channelName: error.message });
+    setSubmitting(false);
+  }
+};
 
 const Create = () => {
-  const status = useSelector(({ modalWindows }) => modalWindows.status);
-  const networkErrors = useSelector(({ modalWindows }) => modalWindows.errors);
-  const dispatch = useDispatch();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const onHide = () => dispatch(closeModal());
   // ------------------------------Formik------------------------------
   const inputRef = useRef('');
-
   const formik = useFormik({
     initialValues: {
       channelName: inputRef.current,
     },
     validationSchema: getSchema('channelName'),
-    onSubmit: ({ channelName }) => {
-      const attributes = { name: channelName.trim() };
-      dispatch(getTheOperation('create', { attributes }));
-    },
-    onReset: () => {
-      dispatch(closeModal());
-    },
+    onSubmit: createChannel({ onHide }),
+    onReset: () => onHide(),
   });
   const formikError = formik.errors.channelName;
 
@@ -38,23 +46,12 @@ const Create = () => {
   const inputClasses = cn({
     'mt-1': true,
     'form-control': true,
-    'is-invalid': formikError || networkErrors,
-  });
-
-  const buttonClasses = cn({
-    'm-1': true,
-    'btn-primary': status !== 'success',
-    'btn-success': status === 'success',
+    'is-invalid': formikError,
   });
 
   const textClasses = cn({
-    'text-danger': formikError || networkErrors,
-    'text-info': status === 'requesting',
-    'text-success': status === 'success',
+    'text-danger': formikError,
   });
-  // ------------------------------------------------------------------------
-  const inputDisabled = status === 'requesting' || status === 'success';
-  const btnDisabled = formikError || networkErrors || status !== 'none';
   // ------------------------------------------------------------------------
   return (
     <Modal show onHide={formik.handleReset} centered>
@@ -70,14 +67,13 @@ const Create = () => {
             type="text"
             className={inputClasses}
             onChange={formik.handleChange}
-            disabled={inputDisabled}
             value={formik.values.channelName}
             placeholder={t('modals.create.placeholder')}
           />
           <label htmlFor="channelName" className={textClasses}>
             {
             (formikError && _.capitalize(formikError))
-            || getInfoText({ status, type: 'create', errors: networkErrors })
+            || t('modals.create.messages')
             }
           </label>
           <div className="align-self-end mt-3">
@@ -85,17 +81,16 @@ const Create = () => {
               onClick={formik.handleReset}
               type="button"
               variant="secondary"
-              disabled={status === 'requesting'}
               className="m-1"
             >
-              Cancel
+              {t('cancelButton')}
             </Button>
             <Button
               type="submit"
-              disabled={btnDisabled}
-              className={buttonClasses}
+              disabled={formikError}
+              className="m-1 btn-primary"
             >
-              {getButtonFilling({ status, type: 'create' })}
+              {t('modals.create.confirmButton')}
             </Button>
           </div>
         </Modal.Body>

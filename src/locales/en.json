@@ -16,39 +16,25 @@
       "identifier": {
         "header": "Identification",
         "placeholder": "Nickname",
-        "messages":{
-          "default": "Enter your nickname to use the chat"
-        },
-        "confirmButton": "Confirm"
+        "confirmButton": "Confirm",
+        "messages": "Enter your nickname to use the chat"
       },
       "create": {
         "header": "Create channel",
         "placeholder": "Channel name",
         "confirmButton": "Create",
-        "messages": {
-          "default": "Enter the name of the new channel",
-          "requesting": "Wait a moment. Channel creating...",
-          "success": "Congratulations! Channel created successfully"
-        }
+        "messages": "Enter the name of the new channel"
       },
       "rename": {
         "header": "Rename the channel",
         "placeholder": "Channel name",
         "confirmButton": "Rename",
-        "messages": {
-          "default": "Enter a new name of channel",
-          "requesting": "Wait a moment. Channel renaming...",
-          "success": "Congratulations! Channel renamed successfully"
-        }
+        "messages": "Enter a new name of channel"
       },
       "remove": {
         "header": "Remove the channel",
         "confirmButton": "Remove",
-        "messages": {
-          "default": "Do you want to remove the \"{{ channelName }}\" channel?\nAll messages will be removed too",
-          "requesting": "Wait a moment. Channel removing...",
-          "success": "Congratulations! Channel removed successfully."
-        }
+        "messages": "Do you want to remove the \"{{ channelName }}\" channel?\nAll messages will be removed too"
       }
     },
     "yupModalErrors": {
