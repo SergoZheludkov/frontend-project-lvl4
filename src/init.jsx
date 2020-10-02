@@ -17,14 +17,21 @@ import Context from './context';
 // Cookies.remove('nickname');
 
 export default (dataFromServer) => {
+  const { messages, channels, currentChannelId } = dataFromServer;
+  const preloadedState = {
+    messagesBox: {
+      messages,
+    },
+    channelsBox: {
+      channels,
+      currentChannelId,
+    },
+  };
   const store = configureStore({
     reducer: rootReducer,
     devTools: process.env.NODE_ENV !== 'production',
+    preloadedState,
   });
-  // ------------------------------------------------------------------------
-  const { messages, channels, currentChannelId } = dataFromServer;
-  store.dispatch({ type: 'messagesBox/initMessages', payload: { messages } });
-  store.dispatch({ type: 'channelsBox/initChannels', payload: { channels, currentChannelId } });
   // ------------------------------------------------------------------------
   const io = socket();
   io.on('newMessage', ({ data }) => store.dispatch({ type: 'messagesBox/addMessage', payload: data }));
